@@ -1,6 +1,7 @@
 package net.youapps.calcyou.ui.components
 
 import android.view.SoundEffectConstants
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -58,11 +59,10 @@ fun NavDrawerContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(30.dp))
-                    Icon(
+                    Image(
                         modifier = Modifier.size(128.dp),
-                        painter = painterResource(id = R.drawable.ic_launcher_monochrome),
-                        contentDescription = null,
-                        tint = LocalContentColor.current
+                        painter = painterResource(id = R.mipmap.ic_launcher),
+                        contentDescription = null
                     )
                     Text(
                         stringResource(id = R.string.app_name),
