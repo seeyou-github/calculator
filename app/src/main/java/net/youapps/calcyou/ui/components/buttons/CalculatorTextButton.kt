@@ -17,8 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -35,7 +33,6 @@ fun RowScope.CalculatorTextButton(
     onLongClick: (() -> Unit)? = null
 ) {
     val view = LocalView.current
-    val haptic = LocalHapticFeedback.current
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -58,12 +55,12 @@ fun RowScope.CalculatorTextButton(
             .combinedClickable(
                 onClick = {
                     onClick.invoke()
-                    haptic.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                    view.context.vibrateOnClick()
                     view.playSoundEffect(SoundEffectConstants.CLICK)
                 }, onLongClick = {
                     if (onLongClick != null) {
                         onLongClick.invoke()
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        view.context.vibrateOnClick(longPress = true)
                     }
                 }
             )

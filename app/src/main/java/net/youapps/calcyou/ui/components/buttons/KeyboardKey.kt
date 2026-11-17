@@ -17,8 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 
@@ -28,7 +26,6 @@ fun KeyboardKey(
     onClick: () -> Unit
 ) {
     val view = LocalView.current
-    val haptic = LocalHapticFeedback.current
     Box(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(8.dp))
@@ -36,7 +33,7 @@ fun KeyboardKey(
             .size(48.dp)
             .clickable {
                 onClick()
-                haptic.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                view.context.vibrateOnClick()
                 view.playSoundEffect(SoundEffectConstants.CLICK)
             },
         contentAlignment = Alignment.Center
@@ -59,7 +56,6 @@ fun KeyboardSpecialKey(
     icon: ImageVector? = null
 ) {
     val view = LocalView.current
-    val haptic = LocalHapticFeedback.current
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(50))
@@ -67,7 +63,7 @@ fun KeyboardSpecialKey(
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable {
                 onClick()
-                haptic.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                view.context.vibrateOnClick()
                 view.playSoundEffect(SoundEffectConstants.CLICK)
             },
         contentAlignment = Alignment.Center
