@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">计算器</string>
+    <string name="no_history" translatable="false">暂无计算历史</string>
     <string name="temperature">Temperature</string>
     <string name="calculator">Calculator</string>
     <string name="storage">Storage</string>

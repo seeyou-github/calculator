@@ -29,6 +29,12 @@ class CalculatorViewModel(context: Context) : ViewModel() {
     var isShowingResult by mutableStateOf(false)
         private set
 
+    /**
+     * The expression that was evaluated the last time the equals button was pressed.
+     */
+    var lastExpression by mutableStateOf("")
+        private set
+
     var history: MutableList<String> = mutableStateListOf()
 
     val trigonometricMode = mutableStateOf(TrigonometricMode.RADIAN)
@@ -39,6 +45,9 @@ class CalculatorViewModel(context: Context) : ViewModel() {
     }
 
     fun onEvent(event: CalculatorEvent) {
+        if (event == CalculatorEvent.Evaluate) {
+            lastExpression = displayText.text
+        }
         isShowingResult = event == CalculatorEvent.Evaluate
         displayText = eventHandler.processEvent(event, displayText, trigonometricMode)
         if (displayText.text.isBlank() || event == CalculatorEvent.Evaluate) {

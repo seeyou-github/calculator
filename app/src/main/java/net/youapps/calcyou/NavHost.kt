@@ -12,16 +12,21 @@ import net.youapps.calcyou.ui.screens.CharacterInputScreen
 import net.youapps.calcyou.ui.screens.ConverterGridScreen
 import net.youapps.calcyou.ui.screens.ConverterScreen
 import net.youapps.calcyou.ui.screens.graphing.GraphingScreen
+import net.youapps.calcyou.viewmodels.CalculatorViewModel
 
 @Composable
-fun AppNavHost(modifier: Modifier = Modifier, navHostController: NavHostController) {
+fun AppNavHost(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    calculatorViewModel: CalculatorViewModel
+) {
     NavHost(
         modifier = modifier,
         navController = navHostController,
         startDestination = Destination.Calculator.route
     ) {
         composable(route = Destination.Calculator.route) {
-            CalculatorScreen()
+            CalculatorScreen(calculatorViewModel = calculatorViewModel)
         }
 
         composable(route = Destination.Converters.route) {
