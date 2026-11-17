@@ -1,33 +1,34 @@
 package net.youapps.calcyou.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.InterceptPlatformTextInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.awaitCancellation
 import net.youapps.calcyou.viewmodels.CalculatorViewModel
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ColumnScope.CalculatorDisplay(
     calculatorViewModel: CalculatorViewModel,
-    primaryTextStyle: TextStyle = MaterialTheme.typography.displayMedium,
-    secondaryTextStyle: TextStyle = MaterialTheme.typography.displaySmall,
-    tertiaryTextStyle: TextStyle = MaterialTheme.typography.titleLarge
+    primaryTextStyle: TextStyle = MaterialTheme.typography.displayMedium
 ) {
     Column(
         modifier = Modifier
@@ -36,61 +37,64 @@ fun ColumnScope.CalculatorDisplay(
             .clip(RoundedCornerShape(24.dp))
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp))
     ) {
-        // the expression of the last calculation, shown above its result
-        if (calculatorViewModel.isShowingResult && calculatorViewModel.lastExpression.isNotBlank()) {
+        // expression area: a fixed two-line viewport over the calculation expression.
+        // older lines scroll out of view and can be revealed by swiping up and down
+        val expressionText = if (calculatorViewModel.isShowingResult) {
+            calculatorViewModel.lastExpression
+        } else {
+            calculatorViewModel.displayText.text
+        }
+        val expressionStyle = primaryTextStyle.copy(
+            lineHeight = primaryTextStyle.fontSize * 1.3f
+        )
+        val expressionLineHeight = with(LocalDensity.current) { expressionStyle.lineHeight.toDp() }
+        val expressionScrollState = rememberScrollState()
+        // keep the newest lines in view while the expression grows
+        LaunchedEffect(expressionText) {
+            expressionScrollState.scrollTo(expressionScrollState.maxValue)
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(expressionLineHeight * 2)
+                .verticalScroll(expressionScrollState),
+            verticalArrangement = Arrangement.Bottom
+        ) {
             Text(
-                text = calculatorViewModel.lastExpression,
+                text = expressionText,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp, horizontal = 16.dp),
+                    .padding(horizontal = 16.dp),
                 textAlign = TextAlign.End,
-                style = secondaryTextStyle,
+                style = expressionStyle,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
 
-        InterceptPlatformTextInput(
-            // prevent the keyboard from showing up when clicking the calculator input field
-            // https://stackoverflow.com/questions/63887321/prevent-the-keyboard-from-appearing-in-a-jetpack-compose-app
-            interceptor = { _, _ ->
-                awaitCancellation()
-            }
+        // result area: always shows the result of the current expression
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(50.dp)),
+            contentAlignment = Alignment.Center
         ) {
-            BasicTextField(
-                value = calculatorViewModel.displayText,
-                onValueChange = {
-                    calculatorViewModel.displayText = it
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(50.dp))
-                    .padding(vertical = 8.dp, horizontal = 16.dp),
-                maxLines = 1,
-                // enlarge the font while the evaluated result of the previous calculation is shown
-                textStyle = (if (calculatorViewModel.isShowingResult) {
-                    primaryTextStyle.copy(fontSize = primaryTextStyle.fontSize * 1.5f)
-                } else {
-                    primaryTextStyle
-                }).plus(
-                    TextStyle(
-                        textAlign = TextAlign.Right,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                )
-            )
-        }
-
-        calculatorViewModel.resultPreviewText?.let { previewText ->
-            if (previewText != calculatorViewModel.displayText.text) {
+            val resultText = if (calculatorViewModel.isShowingResult) {
+                calculatorViewModel.displayText.text
+            } else {
+                calculatorViewModel.resultPreviewText
+            }
+            if (!resultText.isNullOrEmpty()) {
+                // shrink the font for long results so they still fit into the area
+                val resultScale = if (resultText.length <= 12) 1.5f else 1.0f
                 Text(
+                    text = resultText,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceColorAtElevation(20.dp))
-                        .padding(vertical = 4.dp, horizontal = 16.dp),
-                    text = previewText,
+                        .padding(horizontal = 16.dp),
                     textAlign = TextAlign.End,
-                    style = tertiaryTextStyle,
+                    style = primaryTextStyle.copy(fontSize = primaryTextStyle.fontSize * resultScale),
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }

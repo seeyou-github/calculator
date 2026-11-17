@@ -23,6 +23,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -41,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -159,8 +159,7 @@ fun MainScreen() {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             // newest first
                             items(history.asReversed()) { expression ->
-                                Text(
-                                    text = expression,
+                                Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
@@ -172,13 +171,17 @@ fun MainScreen() {
                                                 currentDestination = Destination.Calculator
                                             }
                                         }
-                                        .padding(horizontal = 24.dp, vertical = 16.dp),
-                                    textAlign = TextAlign.End,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    // show at most two lines, hide any overflow
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
+                                ) {
+                                    Text(
+                                        text = expression,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                                        textAlign = TextAlign.End,
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                    HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+                                }
                             }
                         }
                     }

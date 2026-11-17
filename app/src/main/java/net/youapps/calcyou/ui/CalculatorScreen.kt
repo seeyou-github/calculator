@@ -50,8 +50,7 @@ fun CalculatorScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     CalculatorDisplay(
                         calculatorViewModel,
-                        primaryTextStyle = MaterialTheme.typography.headlineMedium,
-                        secondaryTextStyle = MaterialTheme.typography.headlineSmall
+                        primaryTextStyle = MaterialTheme.typography.headlineMedium
                     )
                     CenterKeypadHorizontal(
                         calculatorViewModel::onEvent,
