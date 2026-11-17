@@ -175,7 +175,8 @@ fun MainScreen() {
                                         .padding(horizontal = 24.dp, vertical = 16.dp),
                                     textAlign = TextAlign.End,
                                     style = MaterialTheme.typography.titleLarge,
-                                    maxLines = 1,
+                                    // show at most two lines, hide any overflow
+                                    maxLines = 2,
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
