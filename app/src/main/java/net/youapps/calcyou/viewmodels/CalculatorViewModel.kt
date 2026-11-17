@@ -9,12 +9,16 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import net.youapps.calcyou.CalculatorApplication
 import net.youapps.calcyou.data.CalculatorEvent
 import net.youapps.calcyou.data.EventHandler
 import net.youapps.calcyou.data.evaluator.TrigonometricMode
+import net.youapps.calcyou.persistence.CalculationHistoryRepository
 
 class CalculatorViewModel(context: Context) : ViewModel() {
 
@@ -38,6 +42,20 @@ class CalculatorViewModel(context: Context) : ViewModel() {
     var history: MutableList<String> = mutableStateListOf()
 
     val trigonometricMode = mutableStateOf(TrigonometricMode.RADIAN)
+
+    private val historyRepository = CalculationHistoryRepository(context)
+
+    init {
+        // restore the calculation history persisted from previous sessions
+        viewModelScope.launch {
+            val persistedHistory = historyRepository.historyFlow.first()
+                .takeLast(CalculationHistoryRepository.MAX_HISTORY_SIZE)
+            // guard against racing with a history entry added before the load finished
+            if (history.isEmpty()) {
+                history.addAll(persistedHistory)
+            }
+        }
+    }
 
     fun setExpression(text: String) {
         displayText = TextFieldValue(text)
@@ -72,19 +90,23 @@ class CalculatorViewModel(context: Context) : ViewModel() {
 
     fun clearHistory() {
         history.clear()
+        viewModelScope.launch {
+            historyRepository.clear()
+        }
     }
 
     private fun onUpdateHistory(item: String) {
         // keep only the most recent calculations
-        if (history.size >= MAX_HISTORY_SIZE) {
+        if (history.size >= CalculationHistoryRepository.MAX_HISTORY_SIZE) {
             history.removeAt(0)
         }
         history.add(item)
+        viewModelScope.launch {
+            historyRepository.addExpression(item)
+        }
     }
 
     companion object {
-        private const val MAX_HISTORY_SIZE = 100
-
         val Factory = viewModelFactory {
             initializer {
                 val application = this[APPLICATION_KEY] as CalculatorApplication

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_package = "net.you_apps.calcyou";
+option java_multiple_files = true;
+
+message CalculationHistory {
+  repeated string expressions = 1;
+}
