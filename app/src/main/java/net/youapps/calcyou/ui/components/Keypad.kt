@@ -74,17 +74,13 @@ val combinedKeypad = arrayOf(
 
 @Composable
 fun Keypad(
-    trigonometricMode: TrigonometricMode,
     onEvent: (CalculatorEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        SwipePanels(
-            start = { SideKeypad(onEvent = onEvent, keys = leftKeypad, trigonometricMode = trigonometricMode) },
-            center = { CenterKeypad(onEvent) },
-            end = { SideKeypad(onEvent = onEvent, keys = rightKeypad, trigonometricMode = trigonometricMode) })
+        CenterKeypad(onEvent)
     }
 }
 
@@ -612,5 +608,5 @@ fun SideKeypadHorizontal(
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
-    Keypad(onEvent = {}, trigonometricMode = TrigonometricMode.DEGREE)
+    Keypad(onEvent = {})
 }

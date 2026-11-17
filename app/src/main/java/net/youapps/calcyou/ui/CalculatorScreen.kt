@@ -71,10 +71,7 @@ fun CalculatorScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 CalculatorDisplay(calculatorViewModel)
-                Keypad(
-                    onEvent = calculatorViewModel::onEvent,
-                    trigonometricMode = calculatorViewModel.trigonometricMode.value
-                )
+                Keypad(onEvent = calculatorViewModel::onEvent)
             }
         }
     }
