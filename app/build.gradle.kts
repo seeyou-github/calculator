@@ -27,8 +27,18 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("Test.jks")
+            storePassword = "123456"
+            keyAlias = "Test"
+            keyPassword = "123456"
+        }
+    }
+
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -37,6 +47,7 @@ android {
             )
         }
         getByName("debug") {
+            signingConfig = signingConfigs.getByName("release")
             applicationIdSuffix = ".debug"
             isDebuggable = true
         }
