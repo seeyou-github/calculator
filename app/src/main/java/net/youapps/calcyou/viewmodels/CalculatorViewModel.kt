@@ -45,6 +45,13 @@ class CalculatorViewModel(context: Context) : ViewModel() {
     }
 
     fun onEvent(event: CalculatorEvent) {
+        // pressing equals on a plain number (or nothing) is not a calculation:
+        // don't evaluate, record it or change the display
+        if (event == CalculatorEvent.Evaluate &&
+            !eventHandler.isCalculableExpression(displayText.text)
+        ) {
+            return
+        }
         if (event == CalculatorEvent.Evaluate) {
             lastExpression = displayText.text
         }

@@ -95,6 +95,19 @@ class EventHandler(
         return result
     }
 
+    /**
+     * Whether the text is an actual calculation instead of just a single
+     * (possibly signed) number, i.e. it contains at least one character
+     * that is not part of a number.
+     */
+    fun isCalculableExpression(text: String): Boolean {
+        if (text.isBlank()) return false
+        val numberChars = "0123456789${numberFormat.decimalSeparator}${numberFormat.groupingSeparator}"
+        // allow a leading sign as part of the number
+        val body = if (text.first() in "+-‒") text.substring(1) else text
+        return body.any { it !in numberChars }
+    }
+
     fun evaluateResult(currentText: String, mode: MutableState<TrigonometricMode>): String? {
         return evaluator.evaluate(currentText, mode.value)
     }

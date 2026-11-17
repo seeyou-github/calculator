@@ -25,6 +25,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import net.youapps.calcyou.viewmodels.CalculatorViewModel
 
+/**
+ * Characters after which the expression may wrap to the next line.
+ */
+private val expressionBreakChars = "+-‒×÷%^()"
+
+/**
+ * Inserts zero-width spaces after operator and bracket characters so the
+ * expression only wraps at non-number boundaries and numbers are never
+ * split across lines.
+ */
+private fun String.withBreakOpportunities(): String = buildString {
+    for (char in this@withBreakOpportunities) {
+        append(char)
+        if (char in expressionBreakChars) append('\u200B')
+    }
+}
+
 @Composable
 fun ColumnScope.CalculatorDisplay(
     calculatorViewModel: CalculatorViewModel,
@@ -61,7 +78,7 @@ fun ColumnScope.CalculatorDisplay(
             verticalArrangement = Arrangement.Bottom
         ) {
             Text(
-                text = expressionText,
+                text = expressionText.withBreakOpportunities(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
