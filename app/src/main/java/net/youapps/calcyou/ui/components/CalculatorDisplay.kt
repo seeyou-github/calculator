@@ -92,7 +92,12 @@ fun ColumnScope.CalculatorDisplay(
                     .background(MaterialTheme.colorScheme.surfaceColorAtElevation(50.dp))
                     .padding(vertical = 8.dp, horizontal = 16.dp),
                 maxLines = 1,
-                textStyle = primaryTextStyle.plus(
+                // enlarge the font while the evaluated result of the previous calculation is shown
+                textStyle = (if (calculatorViewModel.isShowingResult) {
+                    primaryTextStyle.copy(fontSize = primaryTextStyle.fontSize * 1.25f)
+                } else {
+                    primaryTextStyle
+                }).plus(
                     TextStyle(
                         textAlign = TextAlign.Right,
                         color = MaterialTheme.colorScheme.onSurface

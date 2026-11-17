@@ -23,15 +23,23 @@ class CalculatorViewModel(context: Context) : ViewModel() {
     var displayText by mutableStateOf(TextFieldValue(""))
     var resultPreviewText by mutableStateOf<String?>(null)
 
+    /**
+     * Whether the display currently shows the evaluated result of the previous calculation.
+     */
+    var isShowingResult by mutableStateOf(false)
+        private set
+
     var history: MutableList<String> = mutableStateListOf()
 
     val trigonometricMode = mutableStateOf(TrigonometricMode.RADIAN)
 
     fun setExpression(text: String) {
         displayText = TextFieldValue(text)
+        isShowingResult = false
     }
 
     fun onEvent(event: CalculatorEvent) {
+        isShowingResult = event == CalculatorEvent.Evaluate
         displayText = eventHandler.processEvent(event, displayText, trigonometricMode)
         if (displayText.text.isBlank() || event == CalculatorEvent.Evaluate) {
             resultPreviewText = null
