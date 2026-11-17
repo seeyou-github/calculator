@@ -12,15 +12,12 @@ class CalculationHistoryRepository(val context: Context) {
 
     suspend fun addExpression(expression: String) {
         dataStore.updateData { data ->
-            val builder = data.toBuilder()
-            builder.addExpressions(expression)
-
-            // keep only the most recent calculations
-            while (builder.expressionsCount > MAX_HISTORY_SIZE) {
-                builder.removeExpressions(0)
-            }
-
-            builder.build()
+            // append and keep only the most recent calculations
+            val expressions = (data.expressionsList + expression)
+                .takeLast(MAX_HISTORY_SIZE)
+            CalculationHistory.newBuilder()
+                .addAllExpressions(expressions)
+                .build()
         }
     }
 
