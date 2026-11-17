@@ -63,11 +63,21 @@ class CalculatorViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun clearHistory() {
+        history.clear()
+    }
+
     private fun onUpdateHistory(item: String) {
+        // keep only the most recent calculations
+        if (history.size >= MAX_HISTORY_SIZE) {
+            history.removeAt(0)
+        }
         history.add(item)
     }
 
     companion object {
+        private const val MAX_HISTORY_SIZE = 100
+
         val Factory = viewModelFactory {
             initializer {
                 val application = this[APPLICATION_KEY] as CalculatorApplication

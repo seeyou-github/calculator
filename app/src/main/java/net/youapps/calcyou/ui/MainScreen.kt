@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -132,6 +133,21 @@ fun MainScreen() {
                         // take up 60% of the screen height, the LazyColumn inside makes it scrollable
                         .height((LocalConfiguration.current.screenHeightDp * 0.6f).dp)
                 ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, end = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.calculation_history),
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        IconButton(onClick = { calculatorViewModel.clearHistory() }) {
+                            Icon(imageVector = Icons.Rounded.Delete, contentDescription = null)
+                        }
+                    }
                     if (history.isEmpty()) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
